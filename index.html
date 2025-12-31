@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Parallax Travel Slider</title>
+     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
+     <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        html,
+        body {
+          position: relative;
+          height: 100%;
+          font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        section {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          height: 100vh;
+        }
+
+        .hero {
+          position: absolute;
+          bottom: 0;
+          z-index: 5;
+          max-width: 550px;
+          filter: contrast(90%);
+          pointer-events: none;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .swiper {
+          width: 100%;
+          height: 100%;
+        }
+
+        .swiper-slide {
+          position: relative;
+          text-align: center;
+          font-size: 18px;
+          background: #fff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+        }
+
+        .slide-content {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 10;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 5%;
+          pointer-events: none;
+        }
+
+        .book-now-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          font-size: 1.2rem;
+          font-weight: bold;
+          border-radius: 50px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+          pointer-events: all;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .book-now-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .destination-info {
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 30px;
+          max-width: 400px;
+          color: white;
+          pointer-events: all;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .destination-emoji {
+          font-size: 2.5rem;
+          margin-bottom: 10px;
+          display: block;
+        }
+
+        .destination-subtitle {
+          font-size: 1.3rem;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: #f0f0f0;
+          font-style: italic;
+        }
+
+        .destination-description {
+          font-size: 1rem;
+          line-height: 1.6;
+          opacity: 0.9;
+          text-align: left;
+        }
+
+        .title {
+          position: absolute;
+          top: 18%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 5rem;
+          letter-spacing: 0.3rem;
+          z-index: 5;
+          color: transparent;
+          background-size: 200% 100%;
+          background-position: 0 0;
+          animation: animated-text 20s linear infinite;
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+
+        @keyframes animated-text {
+          0% {
+            background-position: 0% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+
+        .one,
+        .five {
+          -webkit-text-stroke: 1px rgba(16, 104, 31, 0.8);
+          background-image: url(https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/e9d06cb6-2844-49ed-9bde-23d3364b9fa4);
+          -webkit-background-clip: text;
+          background-clip: text;
+        }
+
+        .two,
+        .three,
+        .four,
+        .six {
+          -webkit-text-stroke: 1px #fff;
+          background-image: url(https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/ba4edde6-822d-437a-88c2-f54392d7a56f);
+          -webkit-background-clip: text;
+          background-clip: text;
+        }
+
+        .swiper-slide img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 1;
+          transition: transform 0.6s ease;
+        }
+
+        /* Parallax effect for background images */
+        .swiper-slide[data-swiper-parallax] img {
+          transform: scale(1.1);
+        }
+
+        /* Navigation styles */
+        .swiper-pagination-bullet {
+          background: white;
+          opacity: 0.7;
+        }
+
+        .swiper-pagination-bullet-active {
+          opacity: 1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+          .title {
+            font-size: 3rem;
+            letter-spacing: 0.2rem;
+          }
+          
+          .hero {
+            max-width: 350px;
+          }
+
+          .slide-content {
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+          }
+
+          .destination-info {
+            max-width: 90%;
+            padding: 20px;
+            margin-bottom: 20px;
+          }
+
+          .book-now-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .title {
+            font-size: 2rem;
+            letter-spacing: 0.1rem;
+          }
+          
+          .hero {
+            max-width: 250px;
+          }
+
+          .destination-info {
+            padding: 15px;
+          }
+
+          .destination-subtitle {
+            font-size: 1.1rem;
+          }
+
+          .destination-description {
+            font-size: 0.9rem;
+          }
+        }
+     </style>
+</head>
+<body>
+    <section>
+      <img class="hero" src="output-removebg-preview.png" alt="Hero character" />
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title one">Edinburgh</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/1bdebd02-d675-4469-be36-dc248448980d" alt="Edinburgh cityscape" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Edinburgh')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">🏰</span>
+                <h3 class="destination-subtitle">The heart of Scotland</h3>
+                <p class="destination-description">Edinburgh is Scotland's historic capital, famous for its medieval Old Town, elegant Georgian New Town, and the dramatic Edinburgh Castle. It is a city of culture, history, and festivals, with cobblestone streets and a vibrant atmosphere year-round.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title two">Stockholm</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/62411bbf-dde9-4654-9298-1fe3e7da2d64" alt="Stockholm waterfront" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Stockholm')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">Stockholm</span>
+                <h3 class="destination-subtitle">The beauty on water</h3>
+                <p class="destination-description">Built across 14 islands, Stockholm is a city where modern design meets royal history. With stunning waterfront views, colorful old-town alleys in Gamla Stan, and cutting-edge architecture, it is one of Europe's most picturesque capitals.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title three">Paris</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/b49c729f-65b0-4a2a-baf7-1d9f180df0a6" alt="Paris landmarks" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Paris')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">Paris</span>
+                <h3 class="destination-subtitle">The city of love</h3>
+                <p class="destination-description">Paris is renowned for its timeless romance, rich art scene, and culinary delights. From the Eiffel Tower and the Louvre to cozy cafés and charming boulevards, Paris blends elegance, fashion, and culture in every corner.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title four">Brugge</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/c9a61071-c74d-4e8b-966a-6948cdbd9665" alt="Brugge canal" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Brugge')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">🇧rugge</span>
+                <h3 class="destination-subtitle">The fairytale city of Belgium</h3>
+                <p class="destination-description">Brugge (Bruges) is a medieval jewel with canals, cobblestone streets, and perfectly preserved architecture. Known as the "Venice of the North," it offers a storybook setting with historic churches, bustling markets, and world-famous Belgian chocolate.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title five">Bavaria</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/25ab6cb7-9251-4aa5-9993-32ebd8542616" alt="Bavarian landscape" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Bavaria')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">Bavaria</span>
+                <h3 class="destination-subtitle">Land of castles and traditions</h3>
+                <p class="destination-description">Bavaria, in southern Germany, is famous for its fairy-tale castles like Neuschwanstein, alpine scenery, and traditional villages. With Oktoberfest, hearty cuisine, and scenic landscapes, Bavaria is the essence of German culture and hospitality.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-slide" data-swiper-parallax="-100">
+            <h1 class="title six">Copenhagen</h1>
+            <img src="https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/365656bc-24bc-4d95-92da-7f34faa616cf" alt="Copenhagen architecture" />
+            <div class="slide-content">
+              <button class="book-now-btn" onclick="bookDestination('Copenhagen')">Book Now</button>
+              <div class="destination-info">
+                <span class="destination-emoji">Copenhagen</span>
+                <h3 class="destination-subtitle">Scandinavia's cozy capital</h3>
+                <p class="destination-description">Copenhagen is a modern yet historic city, known for its colorful Nyhavn harbor, royal palaces, and innovative design. With a culture of cycling, world-class cuisine, and the concept of <em>hygge</em> (coziness), Copenhagen is a city that feels both vibrant and welcoming.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navigation elements -->
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper(".swiper", {
+          grabCursor: true,
+          speed: 300,
+          effect: "slide",
+          loop: true,
+          parallax: true,
+          mousewheel: {
+            invert: false,
+            sensitivity: 1,
+            thresholdDelta: 20,
+            thresholdTime: 200,
+            releaseOnEdges: true,
+          },
+          keyboard: {
+            enabled: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          }
+        });
+
+        swiper.enable();
+
+        // Book Now button functionality
+        function bookDestination(destination) {
+          alert(`Booking ${destination}! This would redirect to booking page.`);
+          // You can replace this with actual booking logic
+          // window.location.href = `booking.html?destination=${destination}`;
+        }
+    </script>
+</body>
+</html>
