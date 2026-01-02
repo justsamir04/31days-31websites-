@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="style.css">
+     <title>Dragon Lore - Interactive Showcase</title>
+</head>
+<body>
+     <!-- Preloader -->
+     <div class="preloader" id="preloader">
+          <div class="preloader__content">
+               <div class="preloader__dragon">
+                    <div class="preloader__dragon-body"></div>
+                    <div class="preloader__dragon-wing"></div>
+               </div>
+               <h2 class="preloader__text">Awakening Dragons...</h2>
+               <div class="preloader__progress">
+                    <div class="preloader__progress-bar"></div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Main Content -->
+     <main class="cont s--inactive">
+          <div class="cont__inner">
+               <!-- Panel 1: Western Dragons -->
+               <div class="el" data-panel="1" style="pointer-events: none;">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🐉</div>
+                                   <h2 class="el__heading">Western Dragons</h2>
+                                   <p class="el__subheading">Fire & Fury</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Legends of the West</h3>
+                                        <p class="el__text">Dragons are legendary creatures found in the myths of many cultures. In Western traditions, they are often seen as fire-breathing beasts with wings and scales, symbolizing power and danger.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Symbol: Power</span>
+                                             <span class="el__stat">Element: Fire</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">
+                         <div class="el__index-back">1</div>
+                         <div class="el__index-front">
+                              <div class="el__index-overlay" data-index="1">1</div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Panel 2: Eastern Dragons -->
+               <div class="el" data-panel="2" style="pointer-events: none;">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🐲</div>
+                                   <h2 class="el__heading">Eastern Dragons</h2>
+                                   <p class="el__subheading">Wisdom & Fortune</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Eastern Mysticism</h3>
+                                        <p class="el__text">In Chinese mythology, dragons are benevolent and wise. They represent strength, prosperity, and good luck, often associated with water and rain rather than fire.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Symbol: Fortune</span>
+                                             <span class="el__stat">Element: Water</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">
+                         <div class="el__index-back">2</div>
+                         <div class="el__index-front">
+                              <div class="el__index-overlay" data-index="2">2</div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Panel 3: Fantasy Dragons -->
+               <div class="el" data-panel="3" style="pointer-events: none;">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🎮</div>
+                                   <h2 class="el__heading">Fantasy Dragons</h2>
+                                   <p class="el__subheading">Interactive Magic</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Digital Age Dragons</h3>
+                                        <p class="el__text">In fantasy stories and video games, dragons are iconic monsters or magical beings. They can be allies or enemies, often guarding treasures or ancient secrets.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Role: Guardian</span>
+                                             <span class="el__stat">Power: Magic</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">
+                         <div class="el__index-back">3</div>
+                         <div class="el__index-front">
+                              <div class="el__index-overlay" data-index="3">3</div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Panel 4: Dragon Anatomy -->
+               <div class="el" data-panel="4" style="pointer-events: none;">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🦴</div>
+                                   <h2 class="el__heading">Anatomy</h2>
+                                   <p class="el__subheading">Form & Function</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Dragon Physiology</h3>
+                                        <p class="el__text">Dragons are usually depicted with large wings, sharp claws, long tails, and the ability to fly. Many breathe fire, ice, or other magical elements.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Feature: Wings</span>
+                                             <span class="el__stat">Ability: Flight</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">
+                         <div class="el__index-back">4</div>
+                         <div class="el__index-front">
+                              <div class="el__index-overlay" data-index="4">4</div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Panel 5: Cultural Views -->
+               <div class="el" data-panel="5" style="pointer-events: none;">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🌍</div>
+                                   <h2 class="el__heading">Cultural Views</h2>
+                                   <p class="el__subheading">Global Perspectives</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">East Meets West</h3>
+                                        <p class="el__text">European dragons are typically portrayed as evil and destructive, while Asian dragons are revered as noble and divine creatures connected to nature and the heavens.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">West: Evil</span>
+                                             <span class="el__stat">East: Divine</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">
+                         <div class="el__index-back">5</div>
+                         <div class="el__index-front">
+                              <div class="el__index-overlay" data-index="5">5</div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </main>
+
+     <!-- Background Effects -->
+     <canvas class="bg-canvas" id="bgCanvas"></canvas>
+
+     <!-- Scripts -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+     <script src="script.js"></script>
+</body>
+</html>
