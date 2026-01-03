@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+     <title>Dragon Lore - Interactive Showcase</title>
+     <style>
+          :root {
+               --panel-count: 5;
+               --panel-gap: clamp(0.5rem, 2vw, 1.5rem);
+               --container-padding: clamp(1rem, 4vw, 3rem);
+               --primary-color: #ae2323;
+               --secondary-color: #2a5298;
+               --accent-color: #ffd700;
+               --text-light: #ffffff;
+               --text-dark: #1f1f1f;
+          }
+
+          *,
+          *:before,
+          *:after {
+               box-sizing: border-box;
+               margin: 0;
+               padding: 0;
+          }
+
+          html {
+               font-size: clamp(14px, 1.5vw, 18px);
+          }
+
+          body {
+               background: linear-gradient(135deg, #1f1f1f 0%, #2c3e50 100%);
+               font-family: "Exo 2", "Open Sans", Helvetica, Arial, sans-serif;
+               color: var(--text-light);
+               overflow-x: hidden;
+               position: relative;
+          }
+
+          /* Preloader with Animation */
+          .preloader {
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #0f0f0f 100%);
+               z-index: 9999;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               transition: opacity 0.5s ease;
+          }
+
+          .preloader__content {
+               text-align: center;
+          }
+
+          .preloader__dragon {
+               width: clamp(60px, 15vw, 100px);
+               height: clamp(60px, 15vw, 100px);
+               margin: 0 auto 2rem;
+               position: relative;
+               animation: dragonFloat 2.5s ease-in-out infinite;
+          }
+
+          @keyframes dragonFloat {
+               0%, 100% { transform: translateY(0px) rotate(0deg); }
+               50% { transform: translateY(-15px) rotate(3deg); }
+          }
+
+          .preloader__dragon-body {
+               width: 100%;
+               height: 100%;
+               background: linear-gradient(135deg, var(--primary-color), #ff6b6b);
+               border-radius: 50% 20% 50% 20%;
+               box-shadow: 0 0 30px rgba(174, 35, 35, 0.6);
+          }
+
+          .preloader__dragon-wing {
+               position: absolute;
+               top: 20%;
+               left: -20%;
+               width: 40%;
+               height: 60%;
+               background: rgba(255, 107, 107, 0.3);
+               border-radius: 50% 10% 50% 10%;
+               animation: wingFlap 0.6s ease-in-out infinite alternate;
+          }
+
+          @keyframes wingFlap {
+               0% { transform: rotateY(0deg); }
+               100% { transform: rotateY(-25deg); }
+          }
+
+          .preloader__text {
+               font-family: "Orbitron", sans-serif;
+               font-size: clamp(1.2rem, 4vw, 1.8rem);
+               font-weight: 700;
+               color: var(--accent-color);
+               margin-bottom: 1.5rem;
+               text-transform: uppercase;
+               letter-spacing: 2px;
+               text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+          }
+
+          .preloader__progress {
+               width: clamp(200px, 50vw, 400px);
+               height: 4px;
+               background: rgba(255, 255, 255, 0.1);
+               border-radius: 2px;
+               overflow: hidden;
+               margin: 0 auto;
+          }
+
+          .preloader__progress-bar {
+               height: 100%;
+               background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+               width: 0%;
+               transition: width 0.3s ease;
+               box-shadow: 0 0 10px var(--primary-color);
+          }
+
+          .preloader--hidden {
+               opacity: 0;
+               pointer-events: none;
+          }
+
+          /* Background Canvas */
+          .bg-canvas {
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               z-index: -1;
+               opacity: 0.25;
+          }
+
+          /* Main Container */
+          .cont {
+               position: relative;
+               min-height: 100vh;
+               padding: var(--container-padding);
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               opacity: 1;
+               transition: opacity 0.4s ease;
+          }
+
+          .cont.s--inactive {
+               opacity: 0;
+          }
+
+          .cont__inner {
+               position: relative;
+               width: 100%;
+               height: clamp(450px, 85vh, 900px);
+               display: grid;
+               grid-template-columns: repeat(var(--panel-count), 1fr);
+               gap: var(--panel-gap);
+               max-width: 1800px;
+               margin: 0 auto;
+          }
+
+          /* Panel Elements - SMOOTH ANIMATIONS */
+          .el {
+               position: relative;
+               background: rgba(37, 37, 37, 0.6);
+               cursor: pointer;
+               transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                           box-shadow 0.4s ease,
+                           border-color 0.4s ease;
+               border-radius: 16px;
+               overflow: hidden;
+               border: 1px solid rgba(255, 255, 255, 0.1);
+               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+               opacity: 0;
+               transform: translateY(30px);
+          }
+
+          .el.is-visible {
+               opacity: 1;
+               transform: translateY(0);
+          }
+
+          .el:hover {
+               transform: translateY(-8px) scale(1.02);
+               box-shadow: 0 16px 48px rgba(174, 35, 35, 0.4);
+               border-color: rgba(174, 35, 35, 0.5);
+          }
+
+          .el__overflow {
+               overflow: hidden;
+               position: relative;
+               height: 100%;
+               width: 100%;
+          }
+
+          .el__inner {
+               position: relative;
+               height: 100%;
+               width: 100%;
+          }
+
+          /* Background with smooth transform */
+          .el__bg {
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               transform: translateZ(0);
+               will-change: transform;
+          }
+
+          .el__bg-overlay {
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               background: linear-gradient(135deg, 
+                    rgba(174, 35, 35, 0.7) 0%, 
+                    rgba(42, 82, 152, 0.5) 50%, 
+                    rgba(0, 0, 0, 0.8) 100%);
+               opacity: 0.7;
+               transition: opacity 0.4s ease;
+          }
+
+          .el:hover .el__bg-overlay {
+               opacity: 0.85;
+          }
+
+          .el__bg:before {
+               content: "";
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               background-size: cover;
+               background-position: center;
+               transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+               transform: scale(1);
+               filter: grayscale(20%) contrast(1.1);
+               will-change: transform;
+          }
+
+          .el:hover .el__bg:before {
+               transform: scale(1.1);
+          }
+
+          .el.s--active .el__bg:before {
+               transform: scale(1.15);
+               filter: grayscale(0%) contrast(1.2);
+          }
+
+          /* Preview Content */
+          .el__preview-cont {
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               display: flex;
+               flex-direction: column;
+               justify-content: center;
+               align-items: center;
+               padding: clamp(1rem, 3vw, 2rem);
+               text-align: center;
+               z-index: 2;
+               pointer-events: none;
+               opacity: 1;
+               transition: opacity 0.4s ease, transform 0.4s ease;
+          }
+
+          .el.s--active .el__preview-cont {
+               opacity: 0;
+               transform: scale(0.9);
+          }
+
+          .el__icon {
+               font-size: clamp(2rem, 6vw, 5rem);
+               margin-bottom: 1rem;
+               filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4));
+               animation: floatIcon 4s ease-in-out infinite;
+          }
+
+          @keyframes floatIcon {
+               0%, 100% { transform: translateY(0px) rotate(0deg); }
+               25% { transform: translateY(-8px) rotate(3deg); }
+               75% { transform: translateY(-5px) rotate(-3deg); }
+          }
+
+          .el__heading {
+               font-family: "Orbitron", sans-serif;
+               font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+               font-weight: 900;
+               color: var(--text-light);
+               text-transform: uppercase;
+               letter-spacing: 1px;
+               text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+               margin-bottom: 0.5rem;
+          }
+
+          .el__subheading {
+               font-size: clamp(0.7rem, 1.5vw, 1rem);
+               color: var(--accent-color);
+               font-weight: 400;
+               opacity: 0.8;
+               transition: opacity 0.3s ease, transform 0.3s ease;
+          }
+
+          .el:hover .el__subheading {
+               opacity: 1;
+               transform: translateY(-2px);
+          }
+
+          /* Expanded Content */
+          .el__content {
+               position: absolute;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               padding: clamp(1.5rem, 4vw, 3rem);
+               opacity: 0;
+               pointer-events: none;
+               z-index: 3;
+               display: flex;
+               flex-direction: column;
+               justify-content: center;
+               background: rgba(0, 0, 0, 0.92);
+               border: 1px solid rgba(255, 255, 255, 0.1);
+               transition: opacity 0.5s ease;
+          }
+
+          .el.s--active .el__content {
+               opacity: 1;
+               pointer-events: auto;
+          }
+
+          .el__content-inner {
+               max-width: 800px;
+               margin: 0 auto;
+               text-align: center;
+          }
+
+          .el__content-inner > * {
+               opacity: 0;
+               transform: translateY(20px);
+               transition: opacity 0.6s ease, transform 0.6s ease;
+          }
+
+          .el.s--active .el__content-inner > * {
+               opacity: 1;
+               transform: translateY(0);
+          }
+
+          .el.s--active .el__title {
+               transition-delay: 0.1s;
+          }
+
+          .el.s--active .el__text {
+               transition-delay: 0.2s;
+          }
+
+          .el.s--active .el__stats {
+               transition-delay: 0.3s;
+          }
+
+          .el__title {
+               font-family: "Orbitron", sans-serif;
+               font-size: clamp(2rem, 5vw, 3.5rem);
+               font-weight: 900;
+               color: var(--accent-color);
+               margin-bottom: 1.5rem;
+               text-transform: uppercase;
+               letter-spacing: 2px;
+               text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+          }
+
+          .el__text {
+               font-size: clamp(1rem, 2vw, 1.4rem);
+               line-height: 1.6;
+               color: var(--text-light);
+               margin-bottom: 2rem;
+          }
+
+          .el__stats {
+               display: flex;
+               justify-content: center;
+               gap: clamp(1rem, 3vw, 2rem);
+               flex-wrap: wrap;
+          }
+
+          .el__stat {
+               font-size: clamp(0.8rem, 1.5vw, 1rem);
+               color: var(--accent-color);
+               font-weight: 600;
+               padding: 0.5rem 1rem;
+               border: 1px solid var(--accent-color);
+               border-radius: 20px;
+               background: rgba(255, 215, 0, 0.1);
+               transition: transform 0.3s ease, background 0.3s ease;
+          }
+
+          .el__stat:hover {
+               transform: translateY(-2px);
+               background: rgba(255, 215, 0, 0.2);
+          }
+
+          /* Close Button */
+          .el__close-btn {
+               position: absolute;
+               top: clamp(1rem, 2vw, 2rem);
+               right: clamp(1rem, 2vw, 2rem);
+               width: 50px;
+               height: 50px;
+               opacity: 0;
+               pointer-events: none;
+               cursor: pointer;
+               z-index: 10;
+               background: rgba(255, 255, 255, 0.1);
+               border-radius: 50%;
+               border: 1px solid rgba(255, 255, 255, 0.2);
+               transition: all 0.3s ease;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+          }
+
+          .el.s--active .el__close-btn {
+               opacity: 1;
+               pointer-events: auto;
+               transition-delay: 0.4s;
+          }
+
+          .el__close-btn:hover {
+               background: rgba(174, 35, 35, 0.3);
+               transform: rotate(90deg) scale(1.15);
+               box-shadow: 0 0 20px rgba(174, 35, 35, 0.5);
+          }
+
+          .el__close-btn span {
+               position: absolute;
+               width: 60%;
+               height: 3px;
+               background: var(--text-light);
+               border-radius: 2px;
+               transition: background 0.3s ease;
+          }
+
+          .el__close-btn:hover span {
+               background: var(--primary-color);
+          }
+
+          .el__close-btn span:nth-child(1) {
+               transform: rotate(45deg);
+          }
+
+          .el__close-btn span:nth-child(2) {
+               transform: rotate(-45deg);
+          }
+
+          /* Index Numbers - Animated */
+          .el__index {
+               position: absolute;
+               bottom: -1rem;
+               left: 0;
+               width: 100%;
+               font-size: clamp(4rem, 12vw, 10rem);
+               font-weight: 900;
+               color: transparent;
+               -webkit-text-stroke: 2px #2f3840;
+               pointer-events: none;
+               font-family: "Orbitron", sans-serif;
+               transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          .el:hover .el__index {
+               transform: translateY(-0.5rem);
+               color: var(--primary-color);
+               -webkit-text-stroke: 2px transparent;
+               text-shadow: 0 0 30px rgba(174, 35, 35, 0.6);
+          }
+
+          /* Panel Backgrounds */
+          .el:nth-child(1) .el__bg:before {
+               background-image: url("https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGRyYWdvbnxlbnwwfHwwfHx8MA%3D%3D");
+          }
+
+          .el:nth-child(2) .el__bg:before {
+               background-image: url("https://images.unsplash.com/photo-1616262373426-18bfa28bafab?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8ZHJhZ29ufGVufDB8fDB8fHww");
+          }
+
+          .el:nth-child(3) .el__bg:before {
+               background-image: url("https://images.unsplash.com/photo-1601987077677-5346c0c57d3f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHJhZ29ufGVufDB8fDB8fHww");
+          }
+
+          .el:nth-child(4) .el__bg:before {
+               background-image: url("https://images.unsplash.com/photo-1646003224990-b59ff1710e6e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyYWdvbnxlbnwwfHwwfHx8MA%3D%3D");
+          }
+
+          .el:nth-child(5) .el__bg:before {
+               background-image: url("https://media.istockphoto.com/id/1334322516/photo/dragon-eggs.webp?a=1&b=1&s=612x612&w=0&k=20&c=B7fwEVc9PDUzQmFqWGcRfPg8f0k5uRV0vS_sSYY0KvU=");
+          }
+
+          /* Active State */
+          .el.s--active {
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100vw !important;
+               height: 100vh !important;
+               z-index: 1000;
+               border-radius: 0;
+               cursor: default;
+               transform: none !important;
+          }
+
+          /* Media Queries */
+          @media (max-width: 768px) {
+               :root {
+                    --panel-count: 1;
+               }
+               
+               .cont__inner {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: repeat(5, 1fr);
+                    height: 100vh;
+                    gap: 0.8rem;
+               }
+               
+               .el__close-btn {
+                    width: 60px;
+                    height: 60px;
+               }
+               
+               .el__icon {
+                    animation: none;
+               }
+          }
+
+          @media (min-width: 769px) and (max-width: 1024px) {
+               .cont__inner {
+                    height: 80vh;
+               }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+               *,
+               *::before,
+               *::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+               }
+          }
+     </style>
+</head>
+<body>
+     <!-- Preloader -->
+     <div class="preloader" id="preloader">
+          <div class="preloader__content">
+               <div class="preloader__dragon">
+                    <div class="preloader__dragon-body"></div>
+                    <div class="preloader__dragon-wing"></div>
+               </div>
+               <h2 class="preloader__text">Awakening Dragons...</h2>
+               <div class="preloader__progress">
+                    <div class="preloader__progress-bar"></div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Main Content -->
+     <main class="cont s--inactive">
+          <div class="cont__inner">
+               <!-- Panel 1: Western Dragons -->
+               <div class="el" data-panel="1">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🐉</div>
+                                   <h2 class="el__heading">Western Dragons</h2>
+                                   <p class="el__subheading">Fire & Fury</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Legends of the West</h3>
+                                        <p class="el__text">Dragons are legendary creatures found in the myths of many cultures. In Western traditions, they are often seen as fire-breathing beasts with wings and scales, symbolizing power and danger.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Symbol: Power</span>
+                                             <span class="el__stat">Element: Fire</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">1</div>
+               </div>
+
+               <!-- Panel 2: Eastern Dragons -->
+               <div class="el" data-panel="2">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🐲</div>
+                                   <h2 class="el__heading">Eastern Dragons</h2>
+                                   <p class="el__subheading">Wisdom & Fortune</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Eastern Mysticism</h3>
+                                        <p class="el__text">In Chinese mythology, dragons are benevolent and wise. They represent strength, prosperity, and good luck, often associated with water and rain rather than fire.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Symbol: Fortune</span>
+                                             <span class="el__stat">Element: Water</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">2</div>
+               </div>
+
+               <!-- Panel 3: Fantasy Dragons -->
+               <div class="el" data-panel="3">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🎮</div>
+                                   <h2 class="el__heading">Fantasy Dragons</h2>
+                                   <p class="el__subheading">Interactive Magic</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Digital Age Dragons</h3>
+                                        <p class="el__text">In fantasy stories and video games, dragons are iconic monsters or magical beings. They can be allies or enemies, often guarding treasures or ancient secrets.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Role: Guardian</span>
+                                             <span class="el__stat">Power: Magic</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">3</div>
+               </div>
+
+               <!-- Panel 4: Dragon Anatomy -->
+               <div class="el" data-panel="4">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🦴</div>
+                                   <h2 class="el__heading">Anatomy</h2>
+                                   <p class="el__subheading">Form & Function</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">Dragon Physiology</h3>
+                                        <p class="el__text">Dragons are usually depicted with large wings, sharp claws, long tails, and the ability to fly. Many breathe fire, ice, or other magical elements.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">Feature: Wings</span>
+                                             <span class="el__stat">Ability: Flight</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">4</div>
+               </div>
+
+               <!-- Panel 5: Cultural Views -->
+               <div class="el" data-panel="5">
+                    <div class="el__overflow">
+                         <div class="el__inner">
+                              <div class="el__bg">
+                                   <div class="el__bg-overlay"></div>
+                              </div>
+                              <div class="el__preview-cont">
+                                   <div class="el__icon">🌍</div>
+                                   <h2 class="el__heading">Cultural Views</h2>
+                                   <p class="el__subheading">Global Perspectives</p>
+                              </div>
+                              <div class="el__content">
+                                   <div class="el__content-inner">
+                                        <h3 class="el__title">East Meets West</h3>
+                                        <p class="el__text">European dragons are typically portrayed as evil and destructive, while Asian dragons are revered as noble and divine creatures connected to nature and the heavens.</p>
+                                        <div class="el__stats">
+                                             <span class="el__stat">West: Evil</span>
+                                             <span class="el__stat">East: Divine</span>
+                                        </div>
+                                   </div>
+                                   <div class="el__close-btn" aria-label="Close">
+                                        <span></span>
+                                        <span></span>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+                    <div class="el__index">5</div>
+               </div>
+          </div>
+     </main>
+
+     <!-- Background Canvas -->
+     <canvas class="bg-canvas" id="bgCanvas"></canvas>
+
+     <script>
+          // ==================== SMOOTH PRELOADER ====================
+          const preloader = document.getElementById('preloader');
+          const progressBar = document.querySelector('.preloader__progress-bar');
+          const preloaderText = document.querySelector('.preloader__text');
+
+          let progress = 0;
+          const loadingInterval = setInterval(() => {
+               progress += Math.random() * 15 + 5;
+               
+               if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    setTimeout(hidePreloader, 400);
+               }
+               
+               progressBar.style.width = `${progress}%`;
+               
+               if (progress < 30) {
+                    preloaderText.textContent = 'Summoning dragons...';
+               } else if (progress < 60) {
+                    preloaderText.textContent = 'Igniting flames...';
+               } else if (progress < 90) {
+                    preloaderText.textContent = 'Sharpening claws...';
+               } else {
+                    preloaderText.textContent = 'Dragons awakened!';
+               }
+          }, 180);
+
+          function hidePreloader() {
+               preloader.classList.add('preloader--hidden');
+               setTimeout(initMainContent, 300);
+          }
+
+          // ==================== ANIMATED Main Content ====================
+          function initMainContent() {
+               const $cont = document.querySelector('.cont');
+               const $els = [...document.querySelectorAll('.el')];
+               const $closeBtns = [...document.querySelectorAll('.el__close-btn')];
+               
+               $cont.classList.remove('s--inactive');
+               
+               // Staggered fade-in animation
+               $els.forEach(($el, i) => {
+                    setTimeout(() => {
+                         $el.classList.add('is-visible');
+                    }, i * 100);
+               });
+               
+               // Click handlers
+               $els.forEach($el => {
+                    $el.addEventListener('click', function() {
+                         if (this.classList.contains('s--active')) return;
+                         
+                         $els.forEach(el => el.classList.remove('s--active'));
+                         $cont.classList.add('s--el-active');
+                         this.classList.add('s--active');
+                         
+                         if (window.innerWidth <= 768) {
+                              document.body.style.overflow = 'hidden';
+                         }
+                    });
+               });
+               
+               // Close handlers
+               $closeBtns.forEach($btn => {
+                    $btn.addEventListener('click', function(e) {
+                         e.stopPropagation();
+                         const activeEl = document.querySelector('.el.s--active');
+                         if (activeEl) {
+                              activeEl.classList.remove('s--active');
+                              $cont.classList.remove('s--el-active');
+                              document.body.style.overflow = '';
+                         }
+                    });
+               });
+               
+               // Keyboard support
+               document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                         const activeEl = document.querySelector('.el.s--active');
+                         if (activeEl) {
+                              activeEl.classList.remove('s--active');
+                              $cont.classList.remove('s--el-active');
+                              document.body.style.overflow = '';
+                         }
+                    }
+               });
+               
+               // Resize handler
+               let resizeTimer;
+               window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => {
+                         const activeEl = document.querySelector('.el.s--active');
+                         if (activeEl && window.innerWidth > 768) {
+                              activeEl.classList.remove('s--active');
+                              $cont.classList.remove('s--el-active');
+                              document.body.style.overflow = '';
+                         }
+                    }, 250);
+               });
+               
+               // Smooth parallax effect for desktop only (hardware accelerated)
+               if (window.innerWidth > 1024) {
+                    let ticking = false;
+                    let mouseX = 0;
+                    let mouseY = 0;
+                    
+                    document.addEventListener('mousemove', function(e) {
+                         mouseX = (e.clientX / window.innerWidth - 0.5) * 12;
+                         mouseY = (e.clientY / window.innerHeight - 0.5) * 12;
+                         
+                         if (!ticking) {
+                              requestAnimationFrame(() => {
+                                   $els.forEach(($el, i) => {
+                                        if (!$el.classList.contains('s--active')) {
+                                             const speed = 1 - (i * 0.08);
+                                             const bg = $el.querySelector('.el__bg');
+                                             if (bg) {
+                                                  bg.style.transform = `translate3d(${mouseX * speed}px, ${mouseY * speed}px, 0)`;
+                                             }
+                                        }
+                                   });
+                                   ticking = false;
+                              });
+                              ticking = true;
+                         }
+                    });
+               }
+          }
+
+          // ==================== OPTIMIZED Canvas Animation ====================
+          const canvas = document.getElementById('bgCanvas');
+          const ctx = canvas.getContext('2d', { alpha: true });
+
+          function resizeCanvas() {
+               canvas.width = window.innerWidth;
+               canvas.height = window.innerHeight;
+          }
+
+          resizeCanvas();
+          window.addEventListener('resize', resizeCanvas);
+
+          // Particle system with connections
+          const particles = [];
+          const particleCount = window.innerWidth > 768 ? 60 : 40;
+
+          class Particle {
+               constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.3;
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.3 + 0.1;
+               }
+               
+               update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+               }
+               
+               draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(174, 35, 35, ${this.opacity})`;
+                    ctx.fill();
+               }
+          }
+
+          for (let i = 0; i < particleCount; i++) {
+               particles.push(new Particle());
+          }
+
+          let animationFrameId;
+          function animateCanvas() {
+               ctx.clearRect(0, 0, canvas.width, canvas.height);
+               
+               particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+               });
+               
+               // Draw connections between nearby particles
+               particles.forEach((p1, i) => {
+                    particles.slice(i + 1).forEach(p2 => {
+                         const dx = p1.x - p2.x;
+                         const dy = p1.y - p2.y;
+                         const distance = Math.sqrt(dx * dx + dy * dy);
+                         
+                         if (distance < 120) {
+                              ctx.beginPath();
+                              ctx.moveTo(p1.x, p1.y);
+                              ctx.lineTo(p2.x, p2.y);
+                              const opacity = 0.15 * (1 - distance / 120);
+                              ctx.strokeStyle = `rgba(174, 35, 35, ${opacity})`;
+                              ctx.lineWidth = 1;
+                              ctx.stroke();
+                         }
+                    });
+               });
+               
+               animationFrameId = requestAnimationFrame(animateCanvas);
+          }
+
+          setTimeout(() => animateCanvas(), 1000);
+
+          // Pause animation when tab is hidden
+          document.addEventListener('visibilitychange', () => {
+               if (document.hidden) {
+                    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+               } else {
+                    animateCanvas();
+               }
+          });
+
+          // Fallback timeout
+          setTimeout(() => {
+               if (!preloader.classList.contains('preloader--hidden')) {
+                    hidePreloader();
+               }
+          }, 5000);
+     </script>
+</body>
+</html>
