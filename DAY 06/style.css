@@ -1,0 +1,66 @@
+body { 
+  background: #000; 
+  color: #fff; 
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 40rem;
+  position: relative;
+}
+
+.left .sticky {
+  position: sticky;
+  top: 1rem;
+}
+
+.left, .right {
+  padding: 1rem 2rem;
+}
+
+.right {
+  border-left: 1px solid #1e1e1e;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.right .box {
+  background-color: #0f0f0f;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  height: 18rem;
+  font-size: 1.4rem;
+}
+
+.reversed .right {
+  order: 1;
+}
+
+.reversed .left {
+  order: 2;
+}
+
+
+/* CSS REC BY LENIS */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+   pointer-events: none;
+}

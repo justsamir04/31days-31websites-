@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>coding crabs</title>
+     <style>
+@font-face {
+  src: url("https://fonts.cdnfonts.com/css/pp-neue-montreal") format("woff2");
+  font-family: "PP Neue Montreal", sans-serif;
+  font-weight: 400;
+}
+
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --warm-off-black: #1a1917;
+  --warm-off-white: #f8f5f2;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "PP Neue Montreal", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--warm-off-black);
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  color: var(--warm-off-white);
+  position: relative;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animated noise effect */
+body::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: transparent
+    url("http://assets.iceable.com/img/noise-transparent.png") repeat 0 0;
+  background-size: 300px 300px;
+  animation: noise-animation 0.3s steps(5) infinite;
+  opacity: 0.9;
+  will-change: transform;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@keyframes noise-animation {
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-2%, -3%);
+  }
+  20% {
+    transform: translate(-4%, 2%);
+  }
+  30% {
+    transform: translate(2%, -4%);
+  }
+  40% {
+    transform: translate(-2%, 5%);
+  }
+  50% {
+    transform: translate(-4%, 2%);
+  }
+  60% {
+    transform: translate(3%, 0);
+  }
+  70% {
+    transform: translate(0, 3%);
+  }
+  80% {
+    transform: translate(-3%, 0);
+  }
+  90% {
+    transform: translate(2%, 2%);
+  }
+  100% {
+    transform: translate(1%, 0);
+  }
+}
+
+/* PRELOADER STYLES */
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--warm-off-black);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1), 
+              transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+#preloader.fade-out {
+  opacity: 0;
+  transform: scale(1.1);
+  pointer-events: none;
+}
+
+.preloader-content {
+  text-align: center;
+  position: relative;
+  z-index: 10000;
+}
+
+/* Circular Progress */
+.circular-progress {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 3rem;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  stroke: rgba(248, 245, 242, 0.1);
+  fill: none;
+  stroke-width: 2;
+}
+
+.progress-ring-circle-fill {
+  stroke: var(--warm-off-white);
+  fill: none;
+  stroke-width: 2;
+  stroke-dasharray: 565.48;
+  stroke-dashoffset: 565.48;
+  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(248, 245, 242, 0.6));
+  stroke-linecap: round;
+}
+
+.preloader-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 5rem;
+  animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(248, 245, 242, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(248, 245, 242, 0.6));
+  }
+}
+
+.preloader-text {
+  font-size: 2.5rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: glitchIn 0.6s ease forwards 0.2s;
+  position: relative;
+}
+
+@keyframes glitchIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  }
+  15% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+    transform: translateX(10px);
+  }
+  30% {
+    clip-path: polygon(0 0, 100% 0, 100% 20%, 0 20%);
+    transform: translateX(-5px);
+  }
+  45% {
+    clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%);
+    transform: translateX(5px);
+  }
+  60% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: translateX(0);
+  }
+}
+
+.loading-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards 0.4s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.loading-bar-container {
+  width: 400px;
+  height: 2px;
+  background-color: rgba(248, 245, 242, 0.1);
+  border-radius: 10px;
+  overflow: visible;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards 0.6s;
+}
+
+.loading-bar {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    var(--warm-off-white) 0%, 
+    rgba(248, 245, 242, 0.8) 50%, 
+    var(--warm-off-white) 100%);
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 20px rgba(248, 245, 242, 0.8),
+              0 0 40px rgba(248, 245, 242, 0.4);
+  border-radius: 10px;
+  position: relative;
+}
+
+.loading-bar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--warm-off-white);
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+  box-shadow: 0 0 15px rgba(248, 245, 242, 1);
+}
+
+.loading-percentage {
+  font-size: 3rem;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+  background: linear-gradient(45deg, var(--warm-off-white), rgba(248, 245, 242, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards 0.8s;
+}
+
+.loading-status {
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  opacity: 0.6;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards 1s;
+}
+
+/* MAIN CONTENT STYLES */
+#main-content {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.3s;
+}
+
+#main-content.visible {
+  opacity: 1;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: rgba(33, 33, 33, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 50px;
+  font-weight: bolder;
+  color: white;
+  transform: translateY(-100%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+nav.visible {
+  transform: translateY(0);
+}
+
+.container {
+  width: 100%;
+  max-width: 1000px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: relative;
+}
+
+#background-image-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.2);
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  will-change: transform;
+}
+
+.projects-container {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.projects-container::-webkit-scrollbar {
+  display: none;
+}
+
+.project-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(248, 245, 242, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.project-item:hover {
+  transform: translateX(10px);
+}
+
+.project-title,
+.project-year {
+  font-size: 1.8rem;
+  position: relative;
+  z-index: 2;
+  mix-blend-mode: exclusion;
+  transition: letter-spacing 0.3s ease;
+}
+
+.project-item:hover .project-title {
+  letter-spacing: 0.05em;
+}
+
+.project-item::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: var(--warm-off-white);
+  z-index: 1;
+  pointer-events: none;
+  transition: height 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95) 0s;
+}
+
+.project-item:hover::before {
+  height: 100%;
+}
+
+.project-item:not(:hover)::before {
+  transition-duration: 0.8s;
+}
+
+@media (max-width: 768px) {
+  .circular-progress {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .progress-ring {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .progress-ring-circle,
+  .progress-ring-circle-fill {
+    cx: 80;
+    cy: 80;
+    r: 70;
+  }
+  
+  .preloader-logo {
+    font-size: 3.5rem;
+  }
+  
+  .preloader-text {
+    font-size: 1.8rem;
+  }
+  
+  .loading-stats {
+    gap: 2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.3rem;
+  }
+  
+  .loading-bar-container {
+    width: 300px;
+  }
+  
+  .loading-percentage {
+    font-size: 2.5rem;
+  }
+  
+  nav {
+    font-size: 35px;
+  }
+  
+  .project-title,
+  .project-year {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .circular-progress {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .progress-ring {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .progress-ring-circle,
+  .progress-ring-circle-fill {
+    cx: 70;
+    cy: 70;
+    r: 60;
+  }
+  
+  .preloader-logo {
+    font-size: 3rem;
+  }
+  
+  .preloader-text {
+    font-size: 1.4rem;
+  }
+  
+  .loading-stats {
+    gap: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  
+  .loading-bar-container {
+    width: 250px;
+  }
+  
+  .loading-percentage {
+    font-size: 2rem;
+  }
+  
+  .loading-status {
+    font-size: 0.75rem;
+  }
+  
+  .project-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+     </style>
+</head>
+<body>
+     <!-- PRELOADER -->
+     <div id="preloader">
+          <div class="preloader-content">
+               <div class="circular-progress">
+                    <svg class="progress-ring" width="200" height="200">
+                         <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
+                         <circle class="progress-ring-circle-fill" cx="100" cy="100" r="90" id="progressCircle"/>
+                    </svg>
+                    <div class="preloader-logo">🦀</div>
+               </div>
+               <div class="preloader-text">CODING CRABS</div>
+               <div class="loading-stats">
+                    <div class="stat-item">
+                         <div class="stat-label">PROJECTS</div>
+                         <div class="stat-value" id="projectCount">00</div>
+                    </div>
+                    <div class="stat-item">
+                         <div class="stat-label">ASSETS</div>
+                         <div class="stat-value" id="assetCount">00</div>
+                    </div>
+               </div>
+               <div class="loading-bar-container">
+                    <div class="loading-bar" id="loadingBar"></div>
+               </div>
+               <div class="loading-percentage" id="loadingPercentage">0%</div>
+               <div class="loading-status" id="loadingStatus">INITIALIZING...</div>
+          </div>
+     </div>
+
+     <!-- MAIN CONTENT -->
+     <div id="main-content">
+          <nav>
+               <ul>coding crabsðŸ¦€</ul>
+               <ul>/ Projects</ul>
+          </nav>
+          
+          <div id="background-image-container">
+               <img id="background-image" crossorigin="anonymous" alt="">
+          </div>
+
+          <div class="container">
+               <div class="projects-container"></div>
+          </div>
+     </div>
+
+     <script>
+const projects = [
+  {
+    id: 1,
+    title: "flowers",
+    year: "01",
+    image: "https://images.unsplash.com/photo-1530103043960-ef38714abb15?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YWVzdGhldGljfGVufDB8fDB8fHww"
+  },
+  {
+    id: 2,
+    title: "Random bridge",
+    year: "02",
+    image: "https://images.unsplash.com/photo-1461696114087-397271a7aedc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YWVzdGhldGljfGVufDB8fDB8fHww"
+  },
+  {
+    id: 3,
+    title: "Beach",
+    year: "03",
+    image: "https://plus.unsplash.com/premium_photo-1720694818685-60a176ddfedf?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 4,
+    title: "river",
+    year: "04",
+    image: "https://images.unsplash.com/photo-1569154107747-fb00e3b3430d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 5,
+    title: "Highway",
+    year: "05",
+    image: "https://images.unsplash.com/photo-1504253492562-cbc4dc540fcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 6,
+    title: "sunset",
+    year: "06",
+    image: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 7,
+    title: "Random road",
+    year: "07",
+    image: "https://plus.unsplash.com/premium_photo-1673285285994-6bfff235db97?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 8,
+    title: "Rain",
+    year: "08",
+    image: "https://images.unsplash.com/photo-1532767153582-b1a0e5145009?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDB8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 9,
+    title: "Night",
+    year: "09",
+    image: "https://images.unsplash.com/photo-1606764765380-105d13e2918b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Njl8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: 10,
+    title: "Home",
+    year: "10",
+    image: "https://images.unsplash.com/photo-1578504771781-b04176969805?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODR8fGFlc3RoZXRpY3xlbnwwfHwwfHx8MA%3D%3D"
+  }
+];
+
+// PRELOADER FUNCTIONALITY
+let loadingProgress = 0;
+const loadingBar = document.getElementById('loadingBar');
+const loadingPercentage = document.getElementById('loadingPercentage');
+const preloader = document.getElementById('preloader');
+const mainContent = document.getElementById('main-content');
+const progressCircle = document.getElementById('progressCircle');
+const projectCount = document.getElementById('projectCount');
+const assetCount = document.getElementById('assetCount');
+const loadingStatus = document.getElementById('loadingStatus');
+
+const statusMessages = [
+  'INITIALIZING...',
+  'LOADING ASSETS...',
+  'PREPARING PROJECTS...',
+  'OPTIMIZING EXPERIENCE...',
+  'ALMOST READY...',
+  'COMPLETE'
+];
+
+let currentStatusIndex = 0;
+
+function updateProgress() {
+  loadingProgress += Math.random() * 12 + 3;
+  
+  if (loadingProgress > 100) {
+    loadingProgress = 100;
+  }
+  
+  const percentage = Math.floor(loadingProgress);
+  
+  // Update bar
+  loadingBar.style.width = percentage + '%';
+  
+  // Update percentage
+  loadingPercentage.textContent = percentage + '%';
+  
+  // Update circular progress
+  const circumference = 2 * Math.PI * 90;
+  const offset = circumference - (percentage / 100) * circumference;
+  progressCircle.style.strokeDashoffset = offset;
+  
+  // Update counters with animation
+  const currentProjects = Math.min(10, Math.floor((percentage / 100) * 10));
+  const currentAssets = Math.min(32, Math.floor((percentage / 100) * 32));
+  projectCount.textContent = String(currentProjects).padStart(2, '0');
+  assetCount.textContent = String(currentAssets).padStart(2, '0');
+  
+  // Update status message
+  const newStatusIndex = Math.floor((percentage / 100) * (statusMessages.length - 1));
+  if (newStatusIndex !== currentStatusIndex && newStatusIndex < statusMessages.length) {
+    currentStatusIndex = newStatusIndex;
+    loadingStatus.style.opacity = '0';
+    setTimeout(() => {
+      loadingStatus.textContent = statusMessages[currentStatusIndex];
+      loadingStatus.style.transition = 'opacity 0.3s ease';
+      loadingStatus.style.opacity = '0.6';
+    }, 150);
+  }
+  
+  if (loadingProgress < 100) {
+    setTimeout(updateProgress, 150);
+  } else {
+    loadingStatus.textContent = statusMessages[statusMessages.length - 1];
+    setTimeout(() => {
+      preloader.classList.add('fade-out');
+      mainContent.classList.add('visible');
+      document.querySelector('nav').classList.add('visible');
+      
+      setTimeout(() => {
+        preloader.style.display = 'none';
+      }, 800);
+    }, 600);
+  }
+}
+
+// Start preloader
+window.addEventListener('load', () => {
+  setTimeout(updateProgress, 400);
+});
+
+// MAIN APP FUNCTIONALITY
+document.addEventListener("DOMContentLoaded", function () {
+  const projectsContainer = document.querySelector(".projects-container");
+  const backgroundImage = document.getElementById("background-image");
+
+  renderProjects(projectsContainer);
+  preloadImages();
+  setupHoverEvents(backgroundImage, projectsContainer);
+});
+
+function renderProjects(container) {
+  projects.forEach((project, index) => {
+    const projectItem = document.createElement("div");
+    projectItem.classList.add("project-item");
+    projectItem.dataset.id = project.id;
+    projectItem.dataset.image = project.image;
+    projectItem.style.opacity = "0";
+    projectItem.style.transform = "translateY(20px)";
+
+    projectItem.innerHTML = `
+      <div class="project-title">${project.title}</div>
+      <div class="project-year">${project.year}</div>
+    `;
+
+    container.appendChild(projectItem);
+
+    setTimeout(() => {
+      projectItem.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+      projectItem.style.opacity = "1";
+      projectItem.style.transform = "translateY(0)";
+    }, (index * 60) + 1500);
+  });
+}
+
+function setupHoverEvents(backgroundImage, projectsContainer) {
+  const projectItems = document.querySelectorAll(".project-item");
+  const preloadedImages = {};
+  
+  projects.forEach((project) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = project.image;
+    preloadedImages[project.id] = img;
+  });
+
+  projectItems.forEach((item) => {
+    item.addEventListener("mouseenter", function () {
+      const imageUrl = this.dataset.image;
+      
+      backgroundImage.style.transition = "none";
+      backgroundImage.style.transform = "scale(1.2)";
+      backgroundImage.src = imageUrl;
+      backgroundImage.style.opacity = "1";
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          backgroundImage.style.transition = "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+          backgroundImage.style.transform = "scale(1.0)";
+        });
+      });
+    });
+  });
+
+  projectsContainer.addEventListener("mouseleave", function () {
+    backgroundImage.style.opacity = "0";
+  });
+}
+
+function preloadImages() {
+  projects.forEach((project) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = project.image;
+  });
+}
+     </script>
+</body>
+</html>

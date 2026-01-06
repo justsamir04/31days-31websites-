@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinetic Scroll | Experience</title>
+    
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111111;
+            --text-main: #ededed;
+            --text-muted: #888888;
+            --accent: #d9ff00; /* Acid Lime */
+            --border: #333333;
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        /* --- BASE STYLES --- */
+        * { box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            font-family: var(--font-body);
+            overflow: hidden; /* Hidden initially for preloader */
+            margin: 0;
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; }
+        a { text-decoration: none; color: inherit; transition: color 0.3s; }
+        a:hover { color: var(--accent); }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.05;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        /* --- PRELOADER --- */
+        .preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: #fff;
+            color: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+        }
+
+        .preloader-top {
+            display: flex; justify-content: space-between;
+            text-transform: uppercase; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
+        }
+
+        .counter-container {
+            font-family: var(--font-display);
+            font-size: 15vw; font-weight: 800; line-height: 1;
+            align-self: flex-end;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 12vw;
+            line-height: 0.85;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            z-index: 2;
+        }
+
+        .hero p {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            min-height: 100vh;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .left, .right { padding: 4rem 2rem; }
+
+        .left { border-right: 1px solid var(--border); height: 100%; }
+
+        .sticky-wrapper {
+            position: sticky;
+            top: 2rem;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .moving-text {
+            position: absolute; 
+            top: 0;
+            transition: transform 0.1s linear;
+        }
+
+        .moving-text h2 {
+            font-size: 3rem;
+            line-height: 1;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .moving-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        .progress-indicator {
+            margin-top: 1rem;
+            font-family: var(--font-display);
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .right {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+        }
+
+        .box {
+            background: linear-gradient(180deg, var(--card-bg) 0%, #0a0a0a 100%);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            min-height: 20rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .box:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .box h3 { font-size: 2rem; color: var(--accent); margin-bottom: 1rem; }
+        .box p { font-size: 1.1rem; color: #ccc; }
+
+        .reversed .right { order: 1; border-right: 1px solid var(--border); border-left: none; }
+        .reversed .left { order: 2; border-right: none; }
+
+        /* --- FOOTER SECTION --- */
+        footer {
+            min-height: 80vh;
+            background: var(--accent);
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .footer-cta {
+            font-family: var(--font-display);
+            font-size: 10vw;
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .footer-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-top: 2px solid #000;
+            padding-top: 2rem;
+        }
+
+        .footer-col h4 { margin-bottom: 1rem; text-transform: uppercase; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col li { margin-bottom: 0.5rem; font-weight: 500; }
+        
+        /* Lenis Utilities */
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+            .left { height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 2rem; }
+            .sticky-wrapper { height: auto; position: relative; top: 0; }
+            .moving-text { position: relative; top: 0 !important; transform: none !important; }
+            .right { grid-template-columns: 1fr; }
+            .reversed .right { order: 2; }
+            .reversed .left { order: 1; }
+            .hero h1 { font-size: 18vw; }
+            .footer-bottom { grid-template-columns: 1fr; gap: 2rem; }
+            .footer-cta { font-size: 15vw; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="noise"></div>
+
+    <div class="preloader">
+        <div class="preloader-top">
+            <span>Loading Experience</span>
+            <span>Est. 2026</span>
+        </div>
+        <div class="counter-container">
+            <span id="counter">0</span>%
+        </div>
+    </div>
+
+    <header class="hero">
+        <h1 class="hero-title">Kinetic<br>Rhythm</h1>
+        <p class="hero-sub">A vertical exploration of scroll interaction.</p>
+        <div class="scroll-hint">Scroll to Begin</div>
+    </header>
+
+    <section class='container'>
+        <div class='left'>
+            <div class='sticky-wrapper'>
+                <div class='moving-text' id='sticky'>
+                    <h2>I follow<br>the flow.</h2>
+                    <p>The position of this text block updates dynamically based on your global scroll percentage.</p>
+                    <div class="progress-indicator">Section 01</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class='right'>
+            <div class='box'>
+                <h3>Start</h3>
+                <p>Scroll down gently.</p>
+            </div>
+            <div class='box'><p>Smooth interaction</p></div>
+            <div class='box'><p>Design is intelligence made visible.</p></div>
+            <div class='box'><p>Keep going...</p></div>
+            <div class='box'><p>Almost there.</p></div>
+            <div class='box'><p>Dynamic positioning.</p></div>
+        </div>
+    </section>
+
+    <section class='container reversed'>
+        <div class='left'>
+            <div class='sticky-wrapper'>
+                <div class='moving-text' id='sticky2'>
+                    <h2>Inverted<br>Reality.</h2>
+                    <p>Even in a reversed layout, the logic remains aggressive. I track your progress and adjust vertically.</p>
+                    <div class="progress-indicator">Section 02</div>
+                </div>
+            </div>
+        </div>
+        <div class='right'>
+            <div class='box'><h3>Phase 2</h3></div>
+            <div class='box'><p>Feel the weight.</p></div>
+            <div class='box'><p>Content block 3</p></div>
+            <div class='box'><p>Content block 4</p></div>
+            <div class='box'><p>Visual Rhythm.</p></div>
+            <div class='box'><p>End of demo.</p></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-cta">
+            Let's Make<br>Impact.
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <ul>
+                    <li><a href="#">Instagram ↗</a></li>
+                    <li><a href="#">Twitter ↗</a></li>
+                    <li><a href="#">LinkedIn ↗</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sitemap</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Work</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Copyright</h4>
+                <p>© 2026 Kinetic Inc.<br>All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src='https://cdn.jsdelivr.net/gh/studio-freight/lenis@1/bundled/lenis.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // --- 1. PRELOADER ---
+        const counterElement = document.getElementById('counter');
+        const preloader = document.querySelector('.preloader');
+        let count = 0;
+
+        function updateCounter() {
+            count += Math.floor(Math.random() * 4) + 1;
+            if (count > 100) count = 100;
+            counterElement.textContent = count;
+            if (count < 100) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                setTimeout(() => {
+                    gsap.to(preloader, {
+                        y: '-100%', duration: 1.2, ease: 'power4.inOut',
+                        onComplete: () => { document.body.style.overflow = 'auto'; }
+                    });
+                }, 200);
+            }
+        }
+        requestAnimationFrame(updateCounter);
+
+        // --- 2. LENIS SETUP ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: "vertical",
+            smoothWheel: true
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- 3. ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Parallax Fade
+        gsap.to(".hero-title", {
+            y: -100,
+            opacity: 0,
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // Sticky Text Logic (Pure JS connected to Lenis)
+        let sticky = document.getElementById("sticky");
+        let sticky2 = document.getElementById("sticky2");
+
+        lenis.on('scroll', (e) => {
+            const totalScroll = e.dimensions.scrollHeight - e.dimensions.height;
+            const currentScroll = e.animatedScroll; // Smoother value from Lenis
+            
+            // Calculate percentage (0 to 100)
+            let scrollProgress = (currentScroll / totalScroll) * 100;
+            scrollProgress = Math.max(0, Math.min(scrollProgress, 100));
+
+            if(window.innerWidth > 768) {
+                // Apply to stickies
+                sticky.style.top = `${scrollProgress}%`;
+                sticky.style.transform = `translateY(-${scrollProgress}%)`;
+
+                sticky2.style.top = `${scrollProgress}%`;
+                sticky2.style.transform = `translateY(-${scrollProgress}%)`;
+            }
+        });
+    </script>
+</body>
+</html>
