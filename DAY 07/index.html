@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slider</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <style>
+    *{box-sizing:border-box}
+    body{color:#333;background:#001;font-family:Lato,sans-serif;font-size:14px;line-height:20px;margin:0;padding:0;overflow-x:hidden}
+    img{object-fit:cover;width:100%;max-width:100%;height:100%;display:inline-block;vertical-align:middle}
+
+    /* Preloader Styles */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s ease, visibility 1s ease;
+      overflow: hidden;
+    }
+    #preloader::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background: radial-gradient(circle at 50% 50%, rgba(184, 230, 218, 0.03) 0%, transparent 50%);
+      animation: rotate 20s linear infinite;
+    }
+    #preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loader-orb {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(184, 230, 218, 0.4), rgba(184, 230, 218, 0.05));
+      box-shadow: 
+        0 0 60px rgba(184, 230, 218, 0.6),
+        inset 0 0 40px rgba(184, 230, 218, 0.3);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    
+    .loader-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid transparent;
+    }
+    .loader-ring:nth-child(1) {
+      width: 280px;
+      height: 280px;
+      border-top-color: rgba(184, 230, 218, 0.8);
+      border-right-color: rgba(184, 230, 218, 0.4);
+      animation: spin 3s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      filter: drop-shadow(0 0 10px rgba(184, 230, 218, 0.8));
+    }
+    .loader-ring:nth-child(2) {
+      width: 240px;
+      height: 240px;
+      border-bottom-color: rgba(255, 166, 166, 0.8);
+      border-left-color: rgba(255, 166, 166, 0.4);
+      animation: spin 3.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+      filter: drop-shadow(0 0 10px rgba(255, 166, 166, 0.8));
+    }
+    .loader-ring:nth-child(3) {
+      width: 200px;
+      height: 200px;
+      border-top-color: rgba(179, 211, 255, 0.8);
+      border-right-color: rgba(179, 211, 255, 0.4);
+      animation: spin 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      filter: drop-shadow(0 0 10px rgba(179, 211, 255, 0.8));
+    }
+    .loader-ring:nth-child(4) {
+      width: 160px;
+      height: 160px;
+      border-bottom-color: rgba(255, 242, 179, 0.8);
+      border-left-color: rgba(255, 242, 179, 0.4);
+      animation: spin 3s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+      filter: drop-shadow(0 0 10px rgba(255, 242, 179, 0.8));
+    }
+    
+    .particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(184, 230, 218, 0.6);
+      box-shadow: 0 0 10px rgba(184, 230, 218, 0.8);
+      animation: float 4s ease-in-out infinite;
+    }
+    .particle:nth-child(2n) {
+      background: rgba(255, 166, 166, 0.6);
+      box-shadow: 0 0 10px rgba(255, 166, 166, 0.8);
+      animation-duration: 5s;
+    }
+    .particle:nth-child(3n) {
+      background: rgba(179, 211, 255, 0.6);
+      box-shadow: 0 0 10px rgba(179, 211, 255, 0.8);
+      animation-duration: 4.5s;
+    }
+    .particle:nth-child(4n) {
+      background: rgba(255, 242, 179, 0.6);
+      box-shadow: 0 0 10px rgba(255, 242, 179, 0.8);
+      animation-duration: 5.5s;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes float {
+      0%, 100% { 
+        transform: translateY(0) translateX(0); 
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { 
+        transform: translateY(-100vh) translateX(var(--tx)); 
+        opacity: 0;
+      }
+    }
+    
+    .loader-text {
+      color: #fff;
+      font-family: 'Doner Display', Arial, sans-serif;
+      font-size: 2rem;
+      letter-spacing: 1rem;
+      text-transform: uppercase;
+      margin-top: 5rem;
+      position: relative;
+      background: linear-gradient(90deg, #b8e6da, #ffa6a6, #b3d3ff, #fff2b3, #b8e6da);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease-in-out infinite, glitch 5s infinite;
+      text-shadow: 
+        0 0 20px rgba(184, 230, 218, 0.5),
+        0 0 40px rgba(255, 166, 166, 0.3);
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes glitch {
+      0%, 90%, 100% { transform: translate(0); }
+      92% { transform: translate(-2px, 2px); }
+      94% { transform: translate(2px, -2px); }
+      96% { transform: translate(-2px, -2px); }
+      98% { transform: translate(2px, 2px); }
+    }
+    
+    .progress-bar {
+      width: 400px;
+      height: 4px;
+      background: rgba(255,255,255,0.05);
+      margin-top: 3rem;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(184, 230, 218, 0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #b8e6da, #ffa6a6, #b3d3ff, #fff2b3);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+      box-shadow: 
+        0 0 20px rgba(184, 230, 218, 0.8),
+        0 0 40px rgba(255, 166, 166, 0.6);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .percentage {
+      color: rgba(255,255,255,0.9);
+      font-family: 'Inconsolata', monospace;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      letter-spacing: 0.2rem;
+      text-shadow: 0 0 10px rgba(184, 230, 218, 0.5);
+    }
+
+    .code_js,.code_css{display:none}
+    .hero_container{display:flex;justify-content:space-between;align-items:flex-end;width:100vw;height:100vh;position:relative}
+    .color-0{color:#b8e6da}
+    .slide-wrapper{background:#000;display:flex;width:100vw;height:100vh;position:relative;overflow:hidden}
+    .slide_background-wrapper{position:absolute;width:100%;height:100%;overflow:hidden}
+    .slide_images-wrapper{display:flex;flex-flow:column;justify-content:center;align-items:center;width:100%;position:relative;gap:16px}
+    .slide_images-wrapper.wave-vertical{flex-flow:row;gap:3.5rem}
+    .slide_text-wrapper{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;width:100%;padding:5rem 3.5vw}
+    .hero_image-wrapper{position:absolute;width:100%;height:100%}
+    .hero_image{object-fit:cover;width:100%;height:100%;filter:brightness(55%)}
+    .color-3{color:#fff2b3}
+    .slide_text-container{color:#fff;letter-spacing:.5rem;text-transform:uppercase;display:flex;flex-flow:column;justify-content:space-between;align-items:stretch;height:100%;margin:auto;font-family:"Doner Display",Arial,sans-serif;font-size:8vw;font-weight:400;line-height:1;position:relative}
+    .slide_text-container.center{flex-flow:row;justify-content:space-between;align-items:center}
+    .slider{position:relative}
+    .nav_top-wrapper{z-index:2;display:flex;justify-content:center;align-items:center;width:100%;padding:1rem 4vw 1.25rem;position:relative}
+    .nav{position:fixed;inset:0 0 auto;z-index:9999;opacity:0;transition:opacity 0.5s ease 0.5s}
+    .nav.visible{opacity:1}
+    .nav_link{color:#fff;font-family:Inconsolata,monospace;font-size:1.25rem;text-decoration:none;overflow:hidden}
+    .nav_top{display:flex;justify-content:space-between;align-items:center;width:100%;position:relative}
+    .nav_top-line{position:absolute;inset:auto 0 0 50%;width:calc(100% - 2rem);height:1px;transform:translate(-50%);background:rgba(255,255,255,0.3)}
+    .slide_text{position:relative;overflow:hidden;z-index:1;will-change:transform}
+    .line-wrapper{overflow:hidden}
+    .footer_image{object-fit:cover;width:100%;height:100%;filter:brightness(75%)}
+    .color-2{color:#b3d3ff}
+    .color-1{color:#ffa6a6}
+    .footer_container{display:flex;justify-content:space-between;align-items:flex-end;width:100vw;height:100vh;position:relative}
+    .text-right{text-align:right}
+    .work_item-images{display:flex;flex-flow:row;justify-content:center;align-items:center;width:100%;position:absolute;inset:0 auto 0 0}
+    .text-center{text-align:center}
+    .text-left{text-align:left}
+    .hero_texts{color:#fff;text-transform:uppercase;display:flex;flex-flow:column;justify-content:flex-end;align-items:flex-start;width:100%;height:100vh;padding:5rem 3.5vw 2.5rem;font-family:"Doner Display",Arial,sans-serif;font-size:12vw;line-height:1;position:relative}
+    .slide_image-wrapper{background:#fff;padding:3px;aspect-ratio:3/4;width:11vw;position:relative}
+    .slide_image-wrapper.wave-vertical{width:13vw}
+    .footer_texts{color:#fff;letter-spacing:.5rem;text-transform:uppercase;display:flex;flex-flow:column;justify-content:flex-end;align-items:flex-start;width:100%;height:100%;padding:5rem 3.5vw 2.5rem;font-family:"Doner Display",Arial,sans-serif;font-size:10vw;font-weight:400;line-height:1;position:relative}
+    .slide-container{width:100%;height:100%;display:flex;position:relative}
+    .overflow-x-hidden{overflow-x:hidden}
+    .footer_image-wrapper{position:absolute;width:100%;height:100%}
+    .svg_spiral-from-inside{opacity:0;transform-style:preserve-3d;height:60%;position:absolute;transform:rotateX(0) rotateY(180deg) rotateZ(0)}
+    .slide_images-container{display:flex;flex-flow:row;justify-content:center;align-items:center}
+    .slide_images-container.wave-horizontal{padding:1vh 0}
+    .slide_images-container.wave-vertical{flex-flow:column}
+    .svg_wave-horizontal{opacity:0;z-index:10;width:80%;height:5rem;position:absolute}
+    .svg_wave-vertical{opacity:0;width:4.5rem;height:90%;position:absolute;overflow:hidden}
+    .svg_spiral-from-outside{opacity:0;z-index:10;height:100%;position:absolute}
+    .line{position:relative;will-change:transform}
+
+    @media(max-width:767px){.slide_image-wrapper{width:15vw}}
+    @media(max-width:479px){
+      .slide_text-wrapper,.hero_texts{flex-flow:column;gap:2rem;justify-content:space-between;align-items:flex-start}
+      .slide_text-container,.footer_texts{font-size:12.5vw}
+      .loader-container{width:200px;height:200px}
+      .loader-orb{width:140px;height:140px}
+      .loader-ring:nth-child(1){width:200px;height:200px}
+      .loader-ring:nth-child(2){width:170px;height:170px}
+      .loader-ring:nth-child(3){width:140px;height:140px}
+      .loader-ring:nth-child(4){width:110px;height:110px}
+      .progress-bar{width:280px}
+      .loader-text{font-size:1.3rem;letter-spacing:0.5rem}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="particles" id="particles"></div>
+    <div class="loader-container">
+      <div class="loader-orb"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+    </div>
+    <div class="loader-text">LOADING</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="percentage" id="percentage">0%</div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav_top-wrapper">
+      <div class="nav_top">
+        <a href="" class="nav_link">CODING_CRABS</a>
+        <a href="#" class="nav_link">CONTACT</a>
+      </div>
+      <div class="nav_top-line"></div>
+    </div>
+  </nav>
+
+  <!-- SLIDER -->
+  <div data-slider="container" class="slider">
+    <!-- HERO -->
+    <div data-slide="hero" class="slide">
+      <div class="hero_container">
+        <div class="hero_image-wrapper">
+          <img src="assets for p/hero.jpg"
+               srcset="assets for p/hero.jpg 500w, assets for p/hero.jpg 3584w"
+               sizes="100vw" alt="hero" class="hero_image">
+        </div>
+        <div class="hero_texts">
+          <div class="line-wrapper">
+            <div class="line">KEEP CALM</div>
+          </div>
+          <div class="line-wrapper">
+            <div class="line">AND <span class="color-0">SCROLL</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPIRAL FROM INSIDE -->
+    <div data-slide="spiral-from-inside" class="slide">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <div class="slide_background-wrapper">
+            <img src="assets for p/alia9.jpg"
+                 srcset="assets for p/alia9.jpg 500w, assets for p/alia9.jpg 3075w"
+                 sizes="100vw" data-slide-content="image-background" alt="">
+          </div>
+          <div class="slide_text-wrapper">
+            <div class="slide_text-container">
+              <div data-slide-content="text" class="slide_text text-left"><span class="color-3">ALIA</span></div>
+              <div data-slide-content="text" class="slide_text text-right">BHAT</div>
+            </div>
+          </div>
+          <div class="slide_images-wrapper">
+            <div data-slide-content="images-wrapper" class="slide_images-container spiral">
+              <div class="svg_spiral-from-inside w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 500">
+                  <path d="M931.253,363.872 c78.595,88.514-0.573,178.926-69.985,178.926 c-87.126,0-106.326-69.295-106.326-103.928 s22.155-125.097,121.354-125.097 c314.568,0,289.214,375.097-15.028,375.096 c-175.54,0-252.398-149.81-252.398-250 s76.212-250,252.398-250 s277.526,152.81,233.279,353.929"
+                        transform="translate(-606.712 -188.87)" fill="none" stroke="#3f5787" stroke-width="3.84"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia1.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia2.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia12.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia4.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia5.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia6.jpeg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia7.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia8.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/alia main.jpg" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAVE HORIZONTAL -->
+    <div data-slide="wave-horizontal" class="slide">
+      <div data-slide-content="wrapper" class="slide-wrapper">
+        <div class="slide-container">
+          <div class="slide_background-wrapper">
+            <img src="assets for p/rash13.jpg"
+                 srcset="assets for p/rash13.jpg 500w, assets for p/rash13.jpg 3075w"
+                 sizes="100vw" data-slide-content="image-background" alt="">
+          </div>
+          <div class="slide_text-wrapper">
+            <div class="slide_text-container center">
+              <div data-slide-content="text" class="slide_text text-right"><span class="color-2">RASHIMKA</span></div>
+              <div data-slide-content="text" class="slide_text text-left">MANDANA</div>
+            </div>
+          </div>
+          <div class="slide_images-wrapper">
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-horizontal">
+              <div class="svg_wave-horizontal w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
+                  <path d="M0,10 C25,5 25,15 50,10 C75,5 75,15 100,10" fill="none" stroke="#3f5787" stroke-width=".5" vector-effect="non-scaling-stroke"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash1.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash2.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash3.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash4.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash5.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash6.jpg" alt="">
+              </div>
+            </div>
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-horizontal">
+              <div class="svg_wave-horizontal w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
+                  <path d="M0,10 C25,5 25,15 50,10 C75,5 75,15 100,10" fill="none" stroke="#3f5787" stroke-width=".5" vector-effect="non-scaling-stroke"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash main.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash7.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash8.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash9.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash10.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/rash11.jpg" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPIRAL FROM OUTSIDE -->
+    <div data-slide="spiral-from-outside" class="slide">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <div class="slide_background-wrapper">
+            <img src="assets for p/lisa9.jpg"
+               srcset="assets for p/lisa9.jpg 500w, assets for p/lisa9.jpg 3584w"
+                 sizes="100vw" data-slide-content="image-background" alt="">
+          </div>
+          <div class="slide_text-wrapper">
+            <div class="slide_text-container">
+              <div data-slide-content="text" class="slide_text text-left"><span class="color-1">Lalisa </span></div>
+              <div data-slide-content="text" class="slide_text text-right">Manobal</div>
+            </div>
+          </div>
+          <div class="slide_images-wrapper">
+            <div data-slide-content="images-wrapper" class="work_item-images">
+              <div class="svg_spiral-from-outside w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 650 650">
+                  <path d="M713.071,-132.843 c108.109,0,325.387,78.961,325,371.527 c-0.247,186.464-136.878,313.666-325,313.666 c-191.914,0-325.261-187.006-325.261-313.666 c0-158.837,105.727-255.718,223.091-255.718 s236.042,68.433,235.846,212.76 c-0.164,120.42-67.785,164.807-133.676,164.807 c-73.933,0-133.676-66.169-133.676-133.676 s58.012-133.676,133.676-133.676 s135.957,68.932,133.676,145.502"
+                        transform="matrix(.999004 0 0 1 -387.424 97.65)" fill="none" stroke="#3f5787" stroke-width="3.84"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa main.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa1.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa2.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa3.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa4.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa5.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa6.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa7.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper">
+                <img src="assets for p/lisa8.jpg" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAVE VERTICAL -->
+    <div data-slide="wave-vertical" class="slide">
+      <div class="slide-wrapper">
+        <div class="slide-container">
+          <div class="slide_background-wrapper">
+            <img src="assets for p/pooja main.jpg"
+               srcset="assets for p/pooja main.jpg 500w, assets for p/pooja main.jpg 3584w"
+                 sizes="100vw" data-slide-content="image-background" alt="">
+          </div>
+          <div class="slide_text-wrapper">
+            <div class="slide_text-container center">
+              <div data-slide-content="text" class="slide_text text-left"><span class="color-3">POOJA</span></div>
+              <div data-slide-content="text" class="slide_text text-left"> Hegde</div>
+            </div>
+          </div>
+          <div class="slide_images-wrapper wave-vertical">
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-vertical">
+              <div class="svg_wave-vertical w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 20 100" preserveAspectRatio="none">
+                  <path d="M8.996613,0c0,9.949497,3.005363,15.626811,3.005363,24.931923s-4.005358,12.91172-4.005358,25.068076s4.507042,16.434236,4.412464,26.193163-2.409163,15.156111-2.409122,23.806836"
+                        fill="none" stroke="#3f5787" stroke-width=".5"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja1.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja2.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja3.jpg" alt="">
+              </div>
+            </div>
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-vertical">
+              <div class="svg_wave-vertical w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 20 100" preserveAspectRatio="none">
+                  <path d="M8.996613,0c0,9.949497,3.005363,15.626811,3.005363,24.931923s-4.005358,12.91172-4.005358,25.068076s4.507042,16.434236,4.412464,26.193163-2.409163,15.156111-2.409122,23.806836"
+                        fill="none" stroke="#3f5787" stroke-width=".5"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja6.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja4.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja5.jpg" alt="">
+              </div>
+            </div>
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-vertical">
+              <div class="svg_wave-vertical w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 20 100" preserveAspectRatio="none">
+                  <path d="M8.996613,0c0,9.949497,3.005363,15.626811,3.005363,24.931923s-4.005358,12.91172-4.005358,25.068076s4.507042,16.434236,4.412464,26.193163-2.409163,15.156111-2.409122,23.806836"
+                        fill="none" stroke="#3f5787" stroke-width=".5"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja7.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja8.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja9.jpg" alt="">
+              </div>
+            </div>
+            <div data-slide-content="images-wrapper" class="slide_images-container wave-vertical">
+              <div class="svg_wave-vertical w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 20 100" preserveAspectRatio="none">
+                  <path d="M8.996613,0c0,9.949497,3.005363,15.626811,3.005363,24.931923s-4.005358,12.91172-4.005358,25.068076s4.507042,16.434236,4.412464,26.193163-2.409163,15.156111-2.409122,23.806836"
+                        fill="none" stroke="#3f5787" stroke-width=".5"/>
+                </svg>
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja12.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja11.jpg" alt="">
+              </div>
+              <div data-slide-content="image" class="slide_image-wrapper wave-vertical">
+                <img src="assets for p/pooja10.jpg" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div data-slide="footer" class="slide">
+      <div class="footer_container">
+        <div class="footer_image-wrapper">
+          <img src="assets for p/outro1.jpg"
+               srcset="assets for p/outro1.jpg 500w, assets for p/outro1.jpg 3584w"
+               sizes="100vw" alt="footer" class="footer_image">
+        </div>
+        <div class="footer_texts">
+          <div class="slide_text">CONGRATS!</div>
+          <div class="slide_text text-center">YOU <span class="color-0">SCROLLed</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/split-type"></script>
+
+  <script>
+    // Preloader Logic
+    function initPreloader() {
+      const preloader = document.getElementById('preloader');
+      const progressFill = document.getElementById('progressFill');
+      const percentage = document.getElementById('percentage');
+      const nav = document.querySelector('.nav');
+      const images = document.querySelectorAll('img');
+      let loadedImages = 0;
+      const totalImages = images.length;
+
+      // Create particles
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.bottom = '0';
+        particle.style.animationDelay = Math.random() * 4 + 's';
+        particle.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+        particlesContainer.appendChild(particle);
+      }
+
+      function updateProgress() {
+        loadedImages++;
+        const progress = (loadedImages / totalImages) * 100;
+        progressFill.style.width = progress + '%';
+        percentage.textContent = Math.round(progress) + '%';
+
+        if (loadedImages === totalImages) {
+          setTimeout(() => {
+            preloader.classList.add('hidden');
+            nav.classList.add('visible');
+            document.body.style.overflow = 'auto';
+            // Initialize slider after preloader
+            setTimeout(initSlider, 100);
+          }, 800);
+        }
+      }
+
+      images.forEach(img => {
+        if (img.complete) {
+          updateProgress();
+        } else {
+          img.addEventListener('load', updateProgress);
+          img.addEventListener('error', updateProgress);
+        }
+      });
+
+      // Fallback if all images are cached
+      if (loadedImages === totalImages) {
+        progressFill.style.width = '100%';
+        percentage.textContent = '100%';
+        setTimeout(() => {
+          preloader.classList.add('hidden');
+          nav.classList.add('visible');
+          document.body.style.overflow = 'auto';
+          // Initialize slider after preloader
+          setTimeout(initSlider, 100);
+        }, 1000);
+      }
+    }
+
+    // Main Slider Script
+    function initSlider() {
+      // Check if SplitType is loaded
+      if (typeof SplitType === 'undefined') {
+        console.error('SplitType is not loaded yet');
+        setTimeout(initSlider, 100);
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger, CustomEase, MotionPathPlugin);
+      CustomEase.create("easeInOutCubic", "0.65, 0.05, 0.36, 1.00");
+
+      const ANIMATION_COOLDOWN = 750;
+      const EASE_NAME = "easeInOutCubic";
+      const MINIMUM_SWIPE_DISTANCE = 50;
+
+      let currentIndex = -1;
+      let animating = false;
+      let lastAnimationTime = 0;
+      let touchStartY = 0;
+
+      const slides = gsap.utils.toArray('[data-slide]');
+      const slider = gsap.utils.toArray("[data-slider]")[0];
+
+      const getSlideElements = (slide) => ({
+        imageBackground: slide.querySelector('[data-slide-content="image-background"]'),
+        images: [...slide.querySelectorAll('[data-slide-content="image"]')],
+        imagesWrappers: [...slide.querySelectorAll('[data-slide-content="images-wrapper"]')],
+        path: slide.querySelector("svg path"),
+        texts: gsap.utils.toArray(slide.querySelectorAll('[data-slide-content="text"]'))
+          .map(item => new SplitType(item, { types: 'chars' }))
+      });
+
+      const createTextAnimations = (tl, texts, offset = '-=0.75') => {
+        tl.from(texts[0].chars, {
+          yPercent: -100,
+          duration: 0.75,
+          stagger: { each: 0.05, from: 'end' },
+          ease: EASE_NAME,
+        }, offset)
+          .from(texts[1].chars, {
+            yPercent: 100,
+            duration: 0.75,
+            stagger: { each: 0.05, from: 'start' },
+            ease: EASE_NAME,
+          }, '<');
+      };
+
+      const createBackgroundAnimation = (tl, imageBackground) => {
+        tl.fromTo(imageBackground,
+          { scale: 1.5, filter: "brightness(100%)" },
+          { duration: 1.5, ease: EASE_NAME, scale: 1, filter: "brightness(50%)" }, 0);
+      };
+
+      function createSpiralFromInsideTimeline(slide) {
+        const tl = gsap.timeline({ paused: true });
+        const { imageBackground, images, path, texts } = getSlideElements(slide);
+        createBackgroundAnimation(tl, imageBackground);
+        const startValue = 0.47;
+        const endValue = 1;
+        const spacing = (endValue - startValue) / (images.length - 1);
+        images.forEach((image, index) => {
+          const endPosition = startValue + (index * spacing);
+          tl.fromTo(image, { scale: 0.25 }, {
+            scale: 1,
+            rotationZ: '45deg',
+            duration: 1.5,
+            ease: EASE_NAME,
+            motionPath: {
+              path: path,
+              align: path,
+              alignOrigin: [0.7, 0.7],
+              autoRotate: true,
+              start: 0,
+              end: endPosition
+            }
+          }, 0.25);
+        });
+        createTextAnimations(tl, texts);
+        return tl;
+      }
+
+      function createSpiralFromOutsideTimeline(slide) {
+        const tl = gsap.timeline({ paused: true });
+        const { imageBackground, images, path, texts } = getSlideElements(slide);
+        createBackgroundAnimation(tl, imageBackground);
+        const startValue = 0.775;
+        const endValue = 1;
+        const spacing = (endValue - startValue) / (images.length - 1);
+        images.forEach((image, index) => {
+          const endPosition = startValue + (index * spacing);
+          tl.fromTo(image, { scale: 0.75 }, {
+            scale: 1,
+            rotationZ: '45deg',
+            duration: 1.75,
+            ease: EASE_NAME,
+            motionPath: {
+              path: path,
+              align: path,
+              alignOrigin: [0.5, 0.5],
+              autoRotate: true,
+              start: 0,
+              end: endPosition
+            }
+          }, 0);
+        });
+        createTextAnimations(tl, texts);
+        return tl;
+      }
+
+      function createWaveHorizontalTimeline(slide) {
+        const tl = gsap.timeline({ paused: true });
+        const { imageBackground, imagesWrappers, texts } = getSlideElements(slide);
+        createBackgroundAnimation(tl, imageBackground);
+        imagesWrappers.forEach((wrapper, indexWrapper) => {
+          const images = [...wrapper.querySelectorAll('[data-slide-content="image"]')];
+          const isReversed = indexWrapper % 2;
+          const path = wrapper.querySelector("svg path");
+          tl.fromTo(wrapper,
+            { x: indexWrapper % 2 ? '-10vw' : '10vw' },
+            { x: '0vh', duration: 1.75, ease: EASE_NAME },
+            indexWrapper % 2 ? 0.15 : 0);
+          const startValue = 0;
+          const endValue = 1;
+          const spacing = (endValue - startValue) / (images.length - 1);
+          images.forEach((image, index) => {
+            const progressValue = startValue + (index * spacing);
+            const startProgress = isReversed ? startValue : endValue;
+            const endProgress = isReversed ? endValue - (index * spacing) : progressValue;
+            tl.to(image, {
+              duration: 1.75,
+              ease: EASE_NAME,
+              motionPath: {
+                path: path,
+                align: path,
+                alignOrigin: [0.5, 0.5],
+                autoRotate: isReversed ? true : 180,
+                start: startProgress,
+                end: endProgress
+              }
+            }, indexWrapper % 2 ? 0.15 : 0);
+          });
+        });
+        createTextAnimations(tl, texts);
+        return tl;
+      }
+
+      function createWaveVerticalTimeline(slide) {
+        const tl = gsap.timeline({ paused: true });
+        const { imageBackground, imagesWrappers, texts } = getSlideElements(slide);
+        createBackgroundAnimation(tl, imageBackground);
+        imagesWrappers.forEach((wrapper, indexWrapper) => {
+          const images = [...wrapper.querySelectorAll('[data-slide-content="image"]')];
+          const isReversed = (indexWrapper + 1) % 2;
+          const path = wrapper.querySelector("svg path");
+          tl.fromTo(wrapper,
+            { y: indexWrapper % 2 ? '25vw' : '-25vw' },
+            { y: indexWrapper % 2 ? '5vw' : '-5vw', duration: 1.5, ease: EASE_NAME },
+            indexWrapper % 2 ? 0.15 : 0);
+          const startValue = 0.2;
+          const endValue = 0.8;
+          const spacing = (endValue - startValue) / images.length;
+          images.forEach((image, index) => {
+            const progressValue = startValue + (index * spacing);
+            const startProgress = isReversed ? startValue : endValue;
+            const endProgress = isReversed ? endValue - (index * spacing) : progressValue;
+            tl.to(image, {
+              duration: 1.75,
+              ease: EASE_NAME,
+              motionPath: {
+                path: path,
+                align: path,
+                alignOrigin: [0.5, 0.5],
+                autoRotate: indexWrapper % 2 ? 90 : -90,
+                start: startProgress,
+                end: endProgress
+              }
+            }, indexWrapper % 2 ? 0.25 : 0);
+          });
+        });
+        createTextAnimations(tl, texts);
+        return tl;
+      }
+
+      function setupEnterAnimation() {
+        const timelines = new Map();
+        if (!slides?.length) {
+          console.warn('No slides found');
+          return timelines;
+        }
+        slides.forEach(slide => {
+          try {
+            const slideName = slide?.dataset?.slide;
+            if (!slideName) return;
+            switch (slideName) {
+              case 'spiral-from-inside':
+                timelines.set(slideName, createSpiralFromInsideTimeline(slide));
+                break;
+              case 'spiral-from-outside':
+                timelines.set(slideName, createSpiralFromOutsideTimeline(slide));
+                break;
+              case 'wave-horizontal':
+                timelines.set(slideName, createWaveHorizontalTimeline(slide));
+                break;
+              case 'wave-vertical':
+                timelines.set(slideName, createWaveVerticalTimeline(slide));
+                break;
+            }
+          } catch (err) {
+            console.error(`Error creating timeline for slide ${slide?.dataset?.slide}:`, err);
+          }
+        });
+        return timelines;
+      }
+
+      const timelines = setupEnterAnimation();
+
+      function initializeSlider() {
+        gsap.set(slider, { position: 'relative', height: '100vh', width: '100%', overflow: 'visible' });
+        gsap.set(slides.slice(1), { position: 'absolute', yPercent: 100, height: '100vh', zIndex: i => i + 1 });
+        gsap.set(slides[0], { position: 'absolute', yPercent: 0, height: '100vh', zIndex: 0 });
+      }
+
+      function canAnimate() {
+        const now = Date.now();
+        return !animating && (now - lastAnimationTime >= ANIMATION_COOLDOWN);
+      }
+
+      function gotoPanel(index, isScrollingDown) {
+        if (!canAnimate() || index >= slides.length || index < -1) return;
+        if (index === -1 && !isScrollingDown) {
+          intentObserver.disable();
+          return;
+        }
+        animating = true;
+        lastAnimationTime = Date.now();
+        const currentSlide = slides[currentIndex];
+        const targetSlide = slides[index];
+        const currentSlideName = currentSlide?.dataset?.slide;
+        const targetSlideName = targetSlide?.dataset?.slide;
+
+        const transitionTl = gsap.timeline({
+          onComplete: () => {
+            animating = false;
+            currentIndex = index;
+          }
+        });
+
+        if (isScrollingDown) {
+          transitionTl
+            .to(currentSlide, { yPercent: -100, duration: 1, ease: EASE_NAME })
+            .fromTo(targetSlide, { yPercent: 100 }, { yPercent: 0, duration: 1, ease: EASE_NAME }, 0);
+        } else {
+          transitionTl
+            .to(currentSlide, { yPercent: 100, duration: 1, ease: EASE_NAME })
+            .fromTo(targetSlide, { yPercent: -100 }, { yPercent: 0, duration: 1, ease: EASE_NAME }, 0);
+        }
+
+        if (timelines.has(currentSlideName) && timelines.get(currentSlideName)) {
+          timelines.get(currentSlideName).reverse();
+        }
+        if (timelines.has(targetSlideName) && timelines.get(targetSlideName)) {
+          timelines.get(targetSlideName).play();
+        }
+      }
+
+      const intentObserver = ScrollTrigger.observe({
+        type: "wheel,touch",
+        onUp: () => canAnimate() && gotoPanel(currentIndex + 1, true),
+        onDown: () => canAnimate() && gotoPanel(currentIndex - 1, false),
+        wheelSpeed: -1,
+        tolerance: 10,
+        preventDefault: true,
+        onPress: self => {
+          if (ScrollTrigger.isTouch) {
+            self.event.preventDefault();
+            touchStartY = self.event.touches[0].clientY;
+          }
+        },
+        onRelease: self => {
+          if (ScrollTrigger.isTouch) {
+            const touchEndY = self.event.changedTouches[0].clientY;
+            const diff = touchEndY - touchStartY;
+            if (Math.abs(diff) > MINIMUM_SWIPE_DISTANCE) {
+              diff > 0
+                ? canAnimate() && gotoPanel(currentIndex - 1, false)
+                : canAnimate() && gotoPanel(currentIndex + 1, true);
+            }
+          }
+        }
+      });
+      intentObserver.disable();
+
+      ScrollTrigger.create({
+        trigger: slider,
+        pin: true,
+        start: "top top",
+        end: "+=1",
+        onEnter: () => {
+          intentObserver.enable();
+          if (currentIndex === -1) {
+            currentIndex = 0;
+            if (timelines.has(slides[0]?.dataset?.slide)) {
+              timelines.get(slides[0].dataset.slide).play();
+            }
+          } else {
+            gotoPanel(currentIndex + 1, true);
+          }
+        },
+        onEnterBack: () => {
+          intentObserver.enable();
+          gotoPanel(currentIndex - 1, false);
+        }
+      });
+
+      initializeSlider();
+
+      function cleanup() {
+        timelines.forEach(timeline => timeline.kill());
+        timelines.clear();
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        intentObserver.disable();
+      }
+      window.addEventListener('unload', cleanup);
+    }
+
+    // Initialize everything when window loads
+    window.addEventListener('load', function() {
+      initPreloader();
+    });
+  </script>
+</body>
+</html>
