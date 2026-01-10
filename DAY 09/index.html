@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css"/>
+  <title>Scroll Video</title>
+</head>
+<body>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero"><h1>Hero Section</h1></section>
+
+<section class="video-scroll">
+  <canvas id="video-canvas"></canvas>
+
+  <!-- animated text layer -->
+  <div class="overlay-content">
+    <h1 class="hero-text">Watch the Story Unfold</h1>
+    <p class="sub-text">Scroll to see every frame</p>
+  </div>
+</section>
+
+<section class="outro"><h1>Outro Section</h1></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
