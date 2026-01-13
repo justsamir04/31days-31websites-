@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>GSAP pinned image mask reveal on scroll </title>
+<link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <div class="container">
+  <div class="spacer"></div>
+
+  <div class="arch">
+    <div class="arch__left">
+      <div class="arch__info" id="green-arch">
+        <div class="content">
+          <h2 class="header">Pista Poise</h2>
+          <p class="desc">A creamy harmony of roasted pistachios blended to perfection. Smooth, nutty, and irresistibly elegant — a scoop that melts your worries away.</p>
+          <a class="link" href="#" style="background-color: #D5FF37">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none">
+              <path fill="#121212" d="M5 2c0 1.105-1.895 2-3 2a2 2 0 1 1 0-4c1.105 0 3 .895 3 2ZM11 3.5c0 1.105-.895 3-2 3s-2-1.895-2-3a2 2 0 1 1 4 0ZM6 9a2 2 0 1 1-4 0c0-1.105.895-3 2-3s2 1.895 2 3Z" />
+            </svg> <span>Learn More</span></a>
+        </div>
+      </div>
+
+      <div class="arch__info" id="blue-arch">
+        <div class="content">
+          <h2 class="header">Blue Bliss</h2>
+          <p class="desc">Dive into the ocean of wild blueberry magic. Sweet, tangy, and refreshingly cool — this scoop is pure berry happiness in every bite.</p>
+          <a class="link" href="#" style="background-color: #7DD6FF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none">
+              <path fill="#121212" d="M5 2c0 1.105-1.895 2-3 2a2 2 0 1 1 0-4c1.105 0 3 .895 3 2ZM11 3.5c0 1.105-.895 3-2 3s-2-1.895-2-3a2 2 0 1 1 4 0ZM6 9a2 2 0 1 1-4 0c0-1.105.895-3 2-3s2 1.895 2 3Z" />
+            </svg> <span>Learn More</span></a>
+        </div>
+      </div>
+
+      <div class="arch__info" id="pink-arch">
+        <div class="content">
+          <h2 class="header">BerryLush</h2>
+          <p class="desc">Fresh farm strawberries swirled into rich cream. A classic romance of sweetness and freshness — the taste of summer frozen in time.</p>
+          <a class="link" href="#" style="background-color: #FFA0B0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none">
+              <path fill="#121212" d="M5 2c0 1.105-1.895 2-3 2a2 2 0 1 1 0-4c1.105 0 3 .895 3 2ZM11 3.5c0 1.105-.895 3-2 3s-2-1.895-2-3a2 2 0 1 1 4 0ZM6 9a2 2 0 1 1-4 0c0-1.105.895-3 2-3s2 1.895 2 3Z" />
+            </svg> <span>Learn More</span></a>
+        </div>
+      </div>
+
+      <div class="arch__info" id="orange-arch">
+        <div class="content">
+          <h2 class="header">Citrus Spark</h2>
+          <p class="desc">Would you like me to make this look ready for packaging or social media promotion (with logo tagline and short punchy ad copy)? I can design the text layout or slogan style next.</p>
+          <a class="link" href="#" style="background-color: #FFA17B">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none">
+              <path fill="#121212" d="M5 2c0 1.105-1.895 2-3 2a2 2 0 1 1 0-4c1.105 0 3 .895 3 2ZM11 3.5c0 1.105-.895 3-2 3s-2-1.895-2-3a2 2 0 1 1 4 0ZM6 9a2 2 0 1 1-4 0c0-1.105.895-3 2-3s2 1.895 2 3Z" />
+            </svg> <span>Learn More</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch__right">
+      <div class="img-wrapper" data-index="4">
+        <img src="https://api.deepai.org/job-view-file/be16817c-34b6-4b9f-a03c-cd94f9ebdb6d/outputs/output.jpg" alt="Green Architecture">
+      </div>
+
+      <div class="img-wrapper" data-index="3">
+        <img src="https://api.deepai.org/job-view-file/652bc0e5-5658-4059-96a9-8c4ad86e6d0d/outputs/output.jpg" alt="Blue Architecture">
+      </div>
+
+      <div class="img-wrapper" data-index="2">
+        <img src="https://api.deepai.org/job-view-file/8d02eed7-c444-4a49-ab14-0d43f7d51df9/outputs/output.jpg" alt="Pink Architecture">
+      </div>
+
+      <div class="img-wrapper" data-index="1">
+        <img src="https://api.deepai.org/job-view-file/d68aeab5-21f4-44d0-8bb8-0ab38782ba05/outputs/output.jpg" alt="Orange Architecture">
+      </div>
+
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+</div>
+    <script src='https://unpkg.com/gsap@3/dist/gsap.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js'></script>
+<script src='https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js'></script><script  src="./script.js"></script>
+
+  </body>
+  
+</html>

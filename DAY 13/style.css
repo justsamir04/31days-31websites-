@@ -1,0 +1,181 @@
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+}
+
+:root {
+	font-size: 16px;
+	--color-text: #fff;
+	--color-bg: #000;
+	--color-link: #fff;
+	--color-link-hover: #907030;
+	--color-title: #907030;
+	--perspective: 1500px;
+	--grid-item-ratio: 1.5;
+	--grid-width: 100%;
+	--grid-height: auto;
+	--grid-gap: 2vw;
+	--grid-columns: 4;
+	--grid-inner-scale: 1;
+}
+
+@font-face {
+  font-family: 'Uzi'; 
+  src: url('https://raw.githubusercontent.com/vickkie/uzitrake/main/fonts/Uzi-stylish.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body {
+	margin: 0;
+	color: var(--color-text);
+	background-color: var(--color-bg);
+	font-family: "uzi", serif;
+	font-variation-settings: "ital" 0, "wght" 300;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+
+
+
+main {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+  margin-top:10vh;
+}
+
+
+body #cdawrap {
+    justify-self: start;
+}
+
+
+
+.card-wrap {
+	margin-top: 5vh;
+	display: grid;
+	grid-gap: 2rem;
+	grid-auto-flow: row;
+	grid-template-columns: 250px;
+}
+
+.card__image {
+	display: block;
+	border-radius: 7px;
+	background-size: cover;
+	background-position: 50% 50%;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	filter: contrast(0.8);
+}
+
+
+.content {
+	position: relative;
+	margin-bottom: 20vh;
+}
+
+.content--spacing {
+	margin-bottom: 100vh;
+}
+
+.content__title {
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+	top: 50%;
+	left: 50%;
+	margin: -50vh 0 0 -50vw;
+	padding: 0 10vw;
+	display: grid;
+	place-items: center;
+	text-align: center;
+	font-weight: 300;
+	font-size: clamp(1.5rem, 15vw, 6.5rem);
+}
+
+.content__title--top {
+	align-items: start;
+}
+
+.content__title--bottom {
+	align-items: end;
+}
+
+.content__title--left {
+	justify-items: start;
+	text-align: left;
+}
+
+.content__title--right {
+	justify-items: end;
+	text-align: right;
+}
+
+.outro {
+	display: grid;
+	place-items: center;
+	margin: 40vh 0;
+}
+
+.grid {
+	display: grid;
+	place-items: center;
+	padding: 2rem;
+	width: 100%;
+	perspective: var(--perspective);
+}
+
+.grid-wrap {
+	height: var(--grid-height);
+	width: var(--grid-width);
+	display: grid;
+	grid-template-columns: repeat(var(--grid-columns),1fr);
+	gap: var(--grid-gap);
+	transform-style: preserve-3d;
+}
+
+.grid__item {
+	aspect-ratio: var(--grid-item-ratio);
+	width: 100%;
+	height: auto;
+	overflow: hidden;
+	position: relative;
+	border-radius: 8px;
+	display: grid;
+	place-items: center;
+
+}
+
+.grid__item-inner {
+	position: relative;
+	width: calc(1 / var(--grid-inner-scale) * 100%);
+	height: calc(1 / var(--grid-inner-scale) * 100%);
+	background-size: cover;
+	background-position: 50% 50%;
+}
+
+@media screen and (min-width: 53em) {
+
+
+	.card-wrap {
+		grid-template-columns: repeat(3,250px);
+	}
+
+	body #cdawrap {
+	    justify-self: end;
+	}
+}
+
+.credits {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 50vh auto 0;
+    padding-bottom: 50vh;
+}
+
